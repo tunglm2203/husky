@@ -1,11 +1,8 @@
 <?xml version="1.0"?>
 <!--
 Software License Agreement (BSD)
-
-\file      husky_empty_world.launch
-\authors   Paul Bovbel <pbovbel@clearpathrobotics.com, Devon Ash <dash@clearpathrobotics.com>
+\authors   Paul Bovbel <pbovbel@clearpathrobotics.com
 \copyright Copyright (c) 2015, Clearpath Robotics, Inc., All rights reserved.
-
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that
 the following conditions are met:
  * Redistributions of source code must retain the above copyright notice, this list of conditions and the
@@ -14,7 +11,6 @@ the following conditions are met:
    following disclaimer in the documentation and/or other materials provided with the distribution.
  * Neither the name of Clearpath Robotics nor the names of its contributors may be used to endorse or promote
    products derived from this software without specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WAR-
 RANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
 PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, IN-
@@ -25,19 +21,27 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 -->
 <launch>
 
-<!--  <arg name="world_name" default="worlds/empty.world"/>-->
-  <arg name="world_name" value="$(find husky_gazebo)/worlds/clearpath_playpen.world"/>
+  <arg name="robot_namespace" default="/"/>
 
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(arg world_name)"/> <!-- world_name is wrt GAZEBO_RESOURCE_PATH environment variable -->
-    <arg name="paused" value="false"/>
-    <arg name="use_sim_time" value="true"/>
-    <arg name="gui" value="true"/>
-    <arg name="headless" value="false"/>
-    <arg name="debug" value="false"/>
-  </include>
 
-  <include file="$(find husky_gazebo)/launch/spawn_husky.launch">
-  </include>
+
+  <group ns="$(arg robot_namespace)">
+
+    <!-- Load Husky control information -->
+    <include file="$(find husky_control)/launch/control_mod.launch"/>
+
+
+    <!-- Spawn robot in gazebo -->
+    <node name="spawn_husky_model" pkg="gazebo_ros" type="spawn_model"
+      args="-x 0
+            -y 0
+            -z 0
+            -Y 0
+            -unpause
+            -urdf
+            -param robot_description
+            -model husky
+            -robot_namespace $(arg robot_namespace)" />
+  </group>
 
 </launch>
